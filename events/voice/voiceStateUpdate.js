@@ -6,7 +6,6 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
         if (!newState.member) return
         if (newState.member.user.bot) return
         if (!newState.member) return
-        if (newState.member.user.bot) return
         const userVoice = await newState.channel.clone()
         await userVoice.setName(`${newState.member.user.username}`)
         await userVoice.permissionOverwrites.edit(newState.member, {

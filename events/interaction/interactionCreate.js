@@ -1,8 +1,7 @@
 const Discord = require('discord.js');
 const client = require('../../index.js');
 const cooldowns = new Map();
-client.on('interactionCreate', interaction => {
-
+client.on('interactionCreate', async interaction => {
     const embed = new Discord.EmbedBuilder()
         .setColor(00000)
 
@@ -12,8 +11,9 @@ client.on('interactionCreate', interaction => {
             embeds: [embed]
         })
     }
-
+    const me = await interaction.guild.members.fetch(client.user.id)
     if (interaction.isCommand() || interaction.isContextMenu()) {
+
         const command = client.slashcommands.get(interaction.commandName);
 
         embed.setDescription('**・An error occured while running this command ✖**')
@@ -72,21 +72,21 @@ client.on('interactionCreate', interaction => {
             timeStamps.delete(interaction.guild.id)
         }, cooldownAmount)
 
-        // if (!interaction.guild.me.permissions.has(["SEND_MESSAGES", "EMBED_LINKS"])){
-        //     embed.setTitle(`**Permissions**`)
-        //     embed.setDescription(`Bot need: \`SEND_MESSAGES\``)
-        //     return interaction.member.send({embeds: [embed]}).catch(err => console.log(err))
-        // }
+        if (!me.permissions.has(["SEND_MESSAGES", "EMBED_LINKS"])){
+            embed.setTitle(`**Permissions**`)
+            embed.setDescription(`Bot need: \`SEND_MESSAGES\``)
+            return interaction.member.send({embeds: [embed]}).catch(err => console.log(err))
+        }
         if (!interaction.member.permissions.has(command.UserPerms || [])){
             embed.setTitle(`**Permissions**`)
             embed.setDescription(`You need: \`${command.UserPerms || []}\``)
             return interaction.reply({embeds: [embed]}).catch(err => console.log(err))
         }
-        // if (!interaction.guild.me.permissions.has(command.BotPerms || [])){
-        //     embed.setTitle(`**Permissions**`)
-        //     embed.setDescription(`Bot need: \`${command.BotPerms || []}\``)
-        //     return interaction.reply({embeds: [embed]}).catch(err => console.log(err))
-        // }
+        if (!me.permissions.has(command.BotPerms || [])){
+            embed.setTitle(`**Permissions**`)
+            embed.setDescription(`Bot need: \`${command.BotPerms || []}\``)
+            return interaction.reply({embeds: [embed]}).catch(err => console.log(err))
+        }
 
         command.run(client, interaction, args)
     }
