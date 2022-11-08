@@ -1,17 +1,17 @@
 const { readdirSync } = require('fs');
 const ascii = require('ascii-table');
 
-let table = new ascii('Gotoubun Slashs');
+let table = new ascii('Slash commands');
 table.setHeading('List', ' Status');
 
 module.exports = (client) => {
     let slashcommands = []
 
-	readdirSync(`./SlashCommands/`).forEach(dir => {
-		const commands = readdirSync(`./SlashCommands/${dir}/`).filter(file => file.endsWith(".js"));
+	readdirSync(`./commands/slash/`).forEach(dir => {
+		const commands = readdirSync(`./commands/slash/${dir}/`).filter(file => file.endsWith(".js"));
 
 		for (let file of commands) {
-            let pull = require(`../SlashCommands/${dir}/${file}`);
+            let pull = require(`../commands/slash/${dir}/${file}`);
 
             if (pull.name) {
                 client.slashcommands.set(pull.name, pull);

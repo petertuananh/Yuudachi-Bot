@@ -3,6 +3,7 @@ const colors = require('colors');
 const Discord = require("discord.js");
 const db = require('quick.db');
 const fs = require("fs");
+const { con } = require("./utils/mysql")
 const client = new Discord.Client({
     restTimeOffset: 0,
     allowedMentions: {
@@ -15,7 +16,8 @@ const client = new Discord.Client({
 		// Discord.GatewayIntentBits.GuildPresences,
 		Discord.GatewayIntentBits.GuildMessageReactions, 
 		Discord.GatewayIntentBits.DirectMessages,
-		Discord.GatewayIntentBits.MessageContent
+		Discord.GatewayIntentBits.MessageContent,
+        Discord.GatewayIntentBits.GuildVoiceStates
 	],
 	partials: [
         Discord.Partials.Channel,
@@ -29,9 +31,9 @@ const client = new Discord.Client({
 })
 module.exports = client;
 client.db = db;
-client.config = require('./Settings/Configuration/config.js');
-client.emoji = require('./Settings/Configuration/emojis.js');
+client.config = require("./config.json")
 client.commands = new Discord.Collection();
+client.mysql = con
 client.aliases = new Discord.Collection();
 client.slashcommands = new Discord.Collection();
 
@@ -40,4 +42,4 @@ res.map(name => require(`./handlers/${name}`)(client));
 
 
 
-client.login(client.config.bot.token)
+client.login(client.config.discord.token)

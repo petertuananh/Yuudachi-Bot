@@ -1,4 +1,5 @@
 const { MessageEmbed } = require("discord.js");
+const config = require('../../../config.json')
 
 module.exports = {
     name: "help",
@@ -14,7 +15,7 @@ module.exports = {
             .setAuthor({ name: `${client.user.username} help`, iconURL: client.user.displayAvatarURL({ format: "png", dynamic: true, size: 4096 }) })
             .setThumbnail(client.user.displayAvatarURL({ format: "png", dynamic: true, size: 4096 }))
             .setFooter({ text: `Request by ${message.member.user.username}` , iconURL: message.member.user.displayAvatarURL() })
-            .setColor("AQUA")
+            .setColor(config.setting.embeds.large.color)
             .addField(`Slash`, commands2.map(x => ` > ┕ \`${x.name} (${x.description})\` \n`).join(''),)
             .addField(`Prefix`, commands1.map(x => ` > ┕ \`${x.name} (${x.description})\` \n`).join(''),)
         return message.reply({embeds: [embed2]})

@@ -1,0 +1,71 @@
+{
+    "discord" : {
+        "token" : "OTMzNTA3MzI5MjE3OTI1MTMx.GiKwiu.MtxK8jrq3HFpabYul0kRJiIA_RLMx15zN2eLFU",
+        "secret" : ""
+    },
+    "server" : {
+        "port" : 5400
+    },
+    "setting" : {
+        "presence" : {
+            "status" : "online",
+            "url" : "",
+            "activity" : "/help"
+        },
+        "prefixes" : ["?", "!", "~", ">", "*", "/", "y!"],
+        "executors" : ["786569661231005716", "898521048545374248"],
+        "channels" : {
+            "main" : "",
+            "welcome" : "",
+            "googbye" : "",
+            "partner" : "",
+            "botUses" : [""],
+            "tempvoices" : ["1039557444965249105"],
+            "logs" : {
+                "invite" : "",
+                "punished" : "",
+                "update" : ""
+            }
+        },
+        "roles" : {
+            "main" : "",
+            "levels" : {
+                "text" : {
+
+                },
+                "voice" : {
+                    
+                }
+            }
+        },
+        "embeds" : {
+            "small" : {
+                "color" : "#f8e1eb",
+                "header" : "",
+                "footer" : "",
+                "image" : "",
+                "thumb" : ""
+            },
+            "large" : {
+                "color" : "#f8e1eb",
+                "header" : "",
+                "footer" : "",
+                "image" : "",
+                "thumb" : ""
+            }
+        }
+    },
+    "databases": {
+        "mysql": {
+            "host": "srcscode.xyz",
+            "user": "yuudachi_bot",
+            "password": "TWxTGM1WhaMLjdmA",
+            "database": "yuudachi",
+            "supportBigNumbers": true,
+            "bigNumberStrings": true,
+            "multipleStatements": true,
+            "charset": "utf8mb4_general_ci",
+            "connectionLimit" : 1
+        }
+    }
+}
