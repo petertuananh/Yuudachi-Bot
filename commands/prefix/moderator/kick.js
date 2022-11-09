@@ -6,9 +6,13 @@ module.exports = {
     description: "Kick ai đó :c",
     cooldown: 5,
     ownerOnly: false,
+    UserPerms: ["KickMembers"],
+    BotPerms: ["KickMembers"],
     run: async (client, message, args) => {
         try {
-            const user = message.mentions.members.first().id || message.guild.members.cache.get(args[0]).id || message.guild.members.cache.find(m => m.displayName.toLowerCase() === args[0].toLocaleLowerCase()) || message.guild.members.cache.find(m => m.user.username.toLowerCase() === args[0].toLocaleLowerCase())
+            const userInput = await message.mentions.members.first() || await message.guild.members.fetch(args[0]) || await message.guild.members.cache.find(m => m.displayName.toLowerCase() === args[0].toLocaleLowerCase()) || await message.guild.members.cache.find(m => m.user.username.toLowerCase() === args[0].toLocaleLowerCase())
+            const user = await message.guild.members.cache.get(userInput.id) || await message.guild.members.fetch(userInput.id)
+            const reason = args.slice(1).join(" ")
             const executor = message.member
             if (!user.kickable) {
                 return message.reply({
@@ -27,7 +31,7 @@ module.exports = {
                     ephemeral: true,
                 })
             } else {
-                await user.kick(`By [${executor.user.tag}] ${message.options.getString("reason") ? `with reason: [${message.options.getString("reason")}]` : ``}`).then(() => {
+                await user.kick(`By [${executor.user.tag}] ${reason ? `with reason: [${reason}]` : ``}`).then(() => {
                     return message.reply({
                         embeds: [{
                             color: 65484,
@@ -35,7 +39,7 @@ module.exports = {
                         }],
                         ephemeral: true,
                     })
-                }).catch(() => {
+                }).catch((e) => {
                     return message.reply({
                         embeds: [{
                             color: 65484,
@@ -46,6 +50,7 @@ module.exports = {
                 });
             }
         } catch (error) {
+            console.log(error)
             return message.reply({
                 embeds: [{
                     color: 65484,

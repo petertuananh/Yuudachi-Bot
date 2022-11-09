@@ -5,7 +5,7 @@ const db = require("quick.db");
 const axios = require('axios')
 client.on('messageCreate', async (message) => {
     const embed = new Discord.EmbedBuilder()
-        .setColor(00000)
+        .setColor(`Aqua`)
     if (message.author.bot) return;
 
     if (!message.guild) {
@@ -29,7 +29,7 @@ client.on('messageCreate', async (message) => {
         const cmd = args.shift().toLowerCase();
         const command = client.commands.get(cmd.toLowerCase()) || client.commands.find((cmds) => cmds.aliases && cmds.aliases.includes(cmd));
         if (!command) return;
-    
+        const me = await message.guild.members.fetch(client.user.id)
         if (command) {
             if (!cooldowns.has(command.name)) {
                 cooldowns.set(command.name, new Discord.Collection())
@@ -44,7 +44,7 @@ client.on('messageCreate', async (message) => {
                 if (currentTime < expTime) {
                     const timeLeft = (expTime - currentTime) / 1000
                     const tmotEmbed = new Discord.EmbedBuilder()
-                        .setColor("RED")
+                        .setColor("Aqua")
                         .setTitle(`COOLDOWN ❌`, client.user.displayAvatarURL())
                         .setDescription(`Pls wait \`${timeLeft.toFixed(1)}\`s to use \`${command.name}\` !`)
                         .setTimestamp()
@@ -60,21 +60,21 @@ client.on('messageCreate', async (message) => {
                 timeStamps.delete(message.guild.id)
             }, cooldownAmount)
     
-            // if (!message.guild.me.permissions.has(["SEND_MESSAGES", "EMBED_LINKS"])){
-            //     embed.setTitle(`**Permissions**`)
-            //     embed.setDescription(`Bot need: \`SEND MESSAGES\``)
-            //     return message.member.send({embeds: [embed]}).catch(err => console.log(err))
-            // }
+            if (!me.permissions.has(["SendMessages", "EmbedLinks"])){
+                embed.setTitle(`**Permissions**`)
+                embed.setDescription(`Bot need: \`SendMessages\``)
+                return message.member.send({embeds: [embed]}).catch(err => console.log(err))
+            }
             if (!message.member.permissions.has(command.UserPerms || [])){
                 embed.setTitle(`**Permissions**`)
                 embed.setDescription(`You need: \`${command.UserPerms || []}\``)
                 return message.reply({embeds: [embed]}).catch(err => console.log(err))
             }
-            // if (!message.guild.me.permissions.has(command.BotPerms || [])){
-            //     embed.setTitle(`**Permissions**`)
-            //     embed.setDescription(`Bot need: \`${command.BotPerms || []}\``)
-            //     return message.reply({embeds: [embed]}).catch(err => console.log(err))
-            // }
+            if (!me.permissions.has(command.BotPerms || [])){
+                embed.setTitle(`**Permissions**`)
+                embed.setDescription(`Bot need: \`${command.BotPerms || []}\``)
+                return message.reply({embeds: [embed]}).catch(err => console.log(err))
+            }
     
             if (command.ownerOnly) {
                 if (message.author.id !== client.config.general.ownerID) {
