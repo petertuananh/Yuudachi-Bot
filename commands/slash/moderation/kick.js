@@ -23,58 +23,55 @@ module.exports = {
     UserPerms: ["KickMembers"],
     BotPerms: ["KickMembers"],
     run: async (client, interaction, args) => {
-        try {
-            const userInput = await interaction.options.getUser("user").id
-            const user = await interaction.guild.members.cache.get(userInput) || await interaction.guild.members.fetch(userInput)
-            if (!user) return
-            const executor = (await interaction.guild.members.fetch(await interaction.member.user.id))
-            if (!user.kickable) {
+        const member = await interaction.guild.members.fetch(await interaction.options.getUser("user").id).catch(() => {})
+        const id = await interaction.options.getUser("user").id
+        
+        const executor = interaction.member
+        const reason = `Bởi [${executor.user.tag}] ${interaction.options.getString("reason") ? `với lý do: ${interaction.options.getString("reason")}` : ``}`
+        if (member) {
+            if (!member.kickable) {
                 return interaction.reply({
-                    embeds: [
-                        new Discord.EmbedBuilder()
-                            .setColor("Aqua")
-                            .setDescription(`> \`❌\` The provided user can not be managed by me!`)
-                    ],
+                    embeds: [{
+                        color: 65484,
+                        description: `> \`❌\` Tớ không thể kick người dùng này!`
+                    }],
                     ephemeral: true,
                 })
-            } else if ((user.roles.highest.position <= executor.roles.highest.position) && executor.id !== interaction.guild.ownerId) {
+            } else if ((member.roles.highest.position >= executor.roles.highest.position) && (executor.id !== interaction.guild.ownerId)) {
                 return interaction.reply({
-                    embeds: [
-                        new Discord.EmbedBuilder()
-                            .setColor("Aqua")
-                            .setDescription(`> \`❌\` The provided user can not be managed by you!`)
-                    ],
+                    embeds: [{
+                        color: 65484,
+                        description: `> \`❌\` Cậu không thể kick người dùng này!`
+                    }],
                     ephemeral: true,
                 })
             } else {
-                await user.kick(`By [${executor.user.tag}] ${interaction.options.getString("reason") ? `with reason: [${interaction.options.getString("reason")}]` : ``}`).then(() => {
+                await member.kick(reason)
+                .then(() => {
                     return interaction.reply({
-                        embeds: [
-                            new Discord.EmbedBuilder()
-                                .setColor("Aqua")
-                                .setDescription(`> \`✅\` Kicked ${user.user} [\`${user.user.tag}\`]`)
-                        ],
+                        embeds: [{
+                            color: 65484,
+                            description: `> \`✅\` Đã kick ${member.user} [\`${member.user.tag}\`]`
+                        }],
                         ephemeral: false,
                     })
                 })
-                    .catch(() => {
-                        return interaction.reply({
-                            embeds: [
-                                new Discord.EmbedBuilder()
-                                    .setColor("Aqua")
-                                    .setDescription(`> \`❌\` Enable to kick the user!`)
-                            ],
-                            ephemeral: true,
-                        })
-                    });
+                .catch((e) => {
+                    return interaction.reply({
+                        embeds: [{
+                            color: 65484,
+                            description: `> \`❌\` Không thể kick người dùng này!`
+                        }],
+                        ephemeral: true,
+                    })
+                });
             }
-        } catch (error) {
+        } else {
             return interaction.reply({
-                embeds: [
-                    new Discord.EmbedBuilder()
-                        .setColor("Aqua")
-                        .setDescription(`> \`❌\` Enable to kick the user!`)
-                ],
+                embeds: [{
+                    color: 65484,
+                    description: `> \`❌\` Không thể tìm thấy người dùng này!`
+                }],
                 ephemeral: true,
             })
         }

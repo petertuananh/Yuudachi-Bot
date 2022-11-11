@@ -38,7 +38,7 @@ module.exports = {
                 replaced : await replace(interaction.options.getString("time")),
                 ms : ms(await replace(interaction.options.getString("time")))
             }
-            const executor = (await interaction.guild.members.fetch(await interaction.member.user.id))
+            const executor = (await interaction.guild.members.fetch(interaction.member.user.id))
             if (!user.manageable) {
                 return interaction.reply({
                     embeds: [
@@ -48,7 +48,7 @@ module.exports = {
                     ],
                     ephemeral: true,
                 })
-            } else if ((user.roles.highest.position <= executor.roles.highest.position) && executor.id !== interaction.guild.ownerId) {
+            } else if ((user.roles.highest.position >= executor.roles.highest.position) && (executor.id !== interaction.guild.ownerId)) {
                 return interaction.reply({
                     embeds: [
                         new Discord.EmbedBuilder()

@@ -6,13 +6,21 @@
     "server" : {
         "port" : 5400
     },
+    "api": {
+        "youtubeAPI": "AIzaSyDqBFlstzlhEVIi4RS6GJQK1NtFem3b7bo",
+        "spotify": {
+            "enabled": true,
+            "clientSecret": "50ada825fc6a4abd8392602be7ab3cf1",
+            "clientId": "dc636953758b4bc4a9556e2e77ab36c8"
+        }
+    },
     "setting" : {
         "presence" : {
             "status" : "online",
             "url" : "",
-            "activity" : "/help"
+            "activity" : "/help ・ Đang code dở, đừng thử làm j :))"
         },
-        "prefixes" : ["?", "!", "~", ">", "*", ".", "/", "y!"],
+        "prefixes" : ["?", "!", "~", ">", "*", ".", "+", "-", "_", "y!", "ehe?", "hi?", "xD"],
         "executors" : ["786569661231005716", "898521048545374248"],
         "channels" : {
             "main" : "",

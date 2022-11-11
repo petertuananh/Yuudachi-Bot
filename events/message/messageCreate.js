@@ -7,7 +7,6 @@ client.on('messageCreate', async (message) => {
     const embed = new Discord.EmbedBuilder()
         .setColor(`Aqua`)
     if (message.author.bot) return;
-
     if (!message.guild) {
         embed.setDescription(`**・You can't use command in DMs**`)
         return message.reply({
@@ -17,9 +16,21 @@ client.on('messageCreate', async (message) => {
 
     if (message.channel.partial) await message.channel.fetch();
     if (message.partial) await message.fetch();
-
+    if (message.content == client.user || message.content == client.user.tag || message.content == `<@${client.user.id}>` || message.content == `<@!${client.user.id}>`){
+        message.reply({
+            embeds : [
+                new Discord.EmbedBuilder()
+                    .setColor("Aqua")
+                    .setDescription(`> Xin chào, tớ là ${client.user.username} - một con bot được phát triển bởi vài học sinh tại Việt Nam :flag_vn:\n> Prefix mặc định của tớ là \`${client.config.setting.prefixes}\` và slash command \`/\`\n> Nếu cần hỗ trợ, nhấn vào [đây](https://discord.gg/mayduahuongnoi) hoặc DMs \`Peter Tuan Anh#0001\` or \`Chino#4330\``)
+            ]
+        })
+    }
     const mentionRegPrefix = RegExp(`^<@!?${client.user.id}> `);
-
+    // client.mysql.query(`SELECT * FROM GUILD_PREFIX WHERE guild_id=${message.guild.id}`, async (err, res) => {
+    //     if (res[0]) {
+            
+    //     }
+    // })
     client.config.setting.prefixes.forEach(async prefixes => {
         if (!message.content.toLocaleLowerCase().includes(prefixes)) return
         const prefix = message.content.match(mentionRegPrefix) ? message.content.match(mentionRegPrefix)[0] : prefixes;
@@ -85,7 +96,7 @@ client.on('messageCreate', async (message) => {
                     })
                 }
             }
-            if (command.inVoiceChannel && !message.member.voice.channel) {
+            if (command.inVoice && !message.member.voice.channel) {
                 embed.setTitle(`**Voice**`)
                 embed.setDescription(`**・Bạn phải vào kênh thoại trước để dùng lệnh này**`)
                 return message.channel.send({
