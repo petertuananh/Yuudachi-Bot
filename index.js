@@ -19,6 +19,9 @@ const client = new Discord.Client({
 		Discord.GatewayIntentBits.MessageContent,
         Discord.GatewayIntentBits.GuildVoiceStates,
         Discord.GatewayIntentBits.GuildMembers,
+        Discord.GatewayIntentBits.GuildIntegrations,
+        Discord.GatewayIntentBits.GuildBans,
+        // Discord.GatewayIntentBits.GuildMessages
 	],
 	partials: [
         Discord.Partials.Channel,

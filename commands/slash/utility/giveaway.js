@@ -1,22 +1,7 @@
 const Discord = require("discord.js")
 const ms = require("ms")
 
-const messages = {
-    giveaway:
-        "" +
-        "🎉 **GIVEAWAY** 🎉",
-    giveawayEnded:
-        "" +
-        "🎉 **GIVEAWAY ENDED** 🎉",
-    drawing: `Ends: **{timestamp}**`,
-    inviteToParticipate: `React with 🎉 to participate!`,
-    winMessage: "Congratulations, {winners}! You won **{this.prize}**!",
-    embedFooter: "Giveaways",
-    noWinner: "Giveaway cancelled, no valid participations.",
-    hostedBy: "Hosted by: {this.hostedBy}",
-    winners: "winner(s)",
-    endedAt: "Ended at"
-}
+
 
 module.exports = {
     name: "giveaway",
@@ -32,31 +17,31 @@ module.exports = {
             options: [
                 {
                     name: 'duration',
-                    description: 'How long the giveaway should last for. Example values: 1m, 1h, 1d',
+                    description: 'Thời gian diễn ra giveaway, ví dụ 1m, 1h, 1d',
                     type: Discord.ApplicationCommandOptionType.String,
                     required: true
                 },
                 {
                     name: 'winners',
-                    description: 'How many winners the giveaway should have',
+                    description: 'Có bao nhiêu người sẽ thắng',
                     type: Discord.ApplicationCommandOptionType.Integer,
                     required: true
                 },
                 {
                     name: 'prize',
-                    description: 'What the prize of the giveaway should be',
+                    description: 'Phần thưởng của giveaway',
                     type: Discord.ApplicationCommandOptionType.String,
                     required: true
                 },
                 {
                     name: 'channel',
-                    description: 'The channel to start the giveaway in',
+                    description: 'Giveaway này sẽ ở kênh nào',
                     type: Discord.ApplicationCommandOptionType.Channel,
                     required: true
                 },
                 {
                     name: 'bonusrole',
-                    description: 'Role which would recieve bonus entries',
+                    description: 'Người chơi có vai trò này sẽ có thêm đặc quyền',
                     type: Discord.ApplicationCommandOptionType.Role,
                     required: false
                 },
@@ -74,7 +59,7 @@ module.exports = {
                 },
                 {
                     name: 'role',
-                    description: 'Role you want to add as giveaway joining requirement',
+                    description: 'Người chơi phải có vai trò này để tham gia',
                     type: Discord.ApplicationCommandOptionType.Role,
                     required: false
                 },
@@ -82,12 +67,12 @@ module.exports = {
         },
         {
             name: "end",
-            description: "🎉 End an already running giveaway",
+            description: "🎉 Kết thúc giveaway",
             type: 1,
             options: [
                 {
                     name: 'giveaway',
-                    description: 'The giveaway to end (message ID or giveaway prize)',
+                    description: 'Giveaway ID hoặc phần thưởng',
                     type: Discord.ApplicationCommandOptionType.String,
                     required: true
                 }
@@ -95,12 +80,12 @@ module.exports = {
         },
         {
             name: "reroll",
-            description: "🎉 Reroll a giveaway",
+            description: "🎉 Làm lại giveaway",
             type: 1,
             options: [
                 {
                     name: 'giveaway',
-                    description: 'The giveaway to reroll (message ID or prize)',
+                    description: 'Giveaway ID hoặc phần thưởng',
                     type: Discord.ApplicationCommandOptionType.String,
                     required: true
                 }
@@ -108,30 +93,30 @@ module.exports = {
         },
         {
             name: "edit",
-            description: "🎉 Edit a giveaway",
+            description: "🎉 chỉnh sửa giveaway",
             type: 1,
             options: [
                 {
                     name: 'giveaway',
-                    description: 'The giveaway to end (message ID)',
+                    description: 'Giveaway ID',
                     type: Discord.ApplicationCommandOptionType.String,
                     required: true
                 },
                 {
                     name: 'duration',
-                    description: 'Setting time of mentioned giveaway. Eg. 1h sets the current giveaway to end after an hour!',
+                    description: 'Thời gian diễn ra',
                     type: Discord.ApplicationCommandOptionType.String,
                     required: true
                 },
                 {
                     name: 'winners',
-                    description: 'How many winners the giveaway should have',
+                    description: 'Số người chơi có thể thắng',
                     type: Discord.ApplicationCommandOptionType.Integer,
                     required: true
                 },
                 {
                     name: 'prize',
-                    description: 'What the prize of the giveaway should be',
+                    description: 'Phần thưởng',
                     type: Discord.ApplicationCommandOptionType.String,
                     required: true
                 }
@@ -139,12 +124,12 @@ module.exports = {
         },
         {
             name: "pause",
-            description: "⏸ Pause a giveaway",
+            description: "⏸ Dừng giveaway",
             type: 1,
             options: [
                 {
                     name: 'giveaway',
-                    description: 'The giveaway to pause (message ID or giveaway prize)',
+                    description: 'Giveaway ID hoặc phần thưởng',
                     type: Discord.ApplicationCommandOptionType.String,
                     required: true
                 }
@@ -152,12 +137,12 @@ module.exports = {
         },
         {
             name: "resume",
-            description: "▶ Resume a paused giveaway",
+            description: "▶ Tiếp tục giveaway",
             type: 1,
             options: [
                 {
                     name: 'giveaway',
-                    description: 'The giveaway to resume (message ID or giveaway prize)',
+                    description: 'Giveaway ID hoặc phần thưởng',
                     type: Discord.ApplicationCommandOptionType.String,
                     required: true
                 }
@@ -165,11 +150,27 @@ module.exports = {
         },
         {
             name: "list",
-            description: "🎉 List all the active giveaways for this guild",
+            description: "🎉 Hiện tất cả giveaway đang diễn ra",
             type: 1,
         },
     ],
     run: async (client, interaction) => {
+        const messages = {
+            giveaway:
+                "" +
+                "🎉 **GIVEAWAY** 🎉",
+            giveawayEnded:
+                "" +
+                "🎉 **GIVEAWAY ĐÃ KẾT THÚC** 🎉",
+            drawing: `> Kết thúc trong: **{timestamp}**`,
+            inviteToParticipate: `> ${interaction.member} vừa tổ chức một giveaway\n> React <a:giveaways:964048599107387412> để tham gia!`,
+            winMessage: "Chúc mừng, {winners}! cậu đã thắng **{this.prize}**!",
+            embedFooter: "Giveaways",
+            noWinner: "Ôi không, giveaway này đã bị hủy do không có đủ số người tham gia",
+            hostedBy: "Giveaway này của: {this.hostedBy}",
+            winners: "Người thắng",
+            endedAt: "Kết thúc lúc"
+        }
         const choice = interaction.options.getSubcommand()
         if (choice == 'start') {
             const giveawayChannel = interaction.options.getChannel('channel');
@@ -178,20 +179,21 @@ module.exports = {
             const giveawayPrize = interaction.options.getString('prize');
             if (giveawayChannel.type !== 0) {
                 return interaction.reply({
-                    content: ':x: Please select a text channel!',
+                    content: `> \`❌\` Ơ hay, phải chọn một kênh văn bản chứ!`,
                     ephemeral: true
                 });
             }
             if (isNaN(ms(giveawayDuration))) {
                 return interaction.reply({
-                    content: ':x: Please select a valid duration!',
+                    content: `> \`❌\` Thời gian diễn ra chưa hợp lệ kìa!`,
                     ephemeral: true
                 });
             }
             if (giveawayWinnerCount < 1) {
                 return interaction.reply({
-                    content: ':x: Please select a valid winner count! greater or equal to one.',
-                })
+                    content: `> \`❌\` Ơ hay, số người thắng phải lớn hơn \`1\` nha!`,
+                    ephemeral: true
+                });
             }
 
             const bonusRole = interaction.options.getRole('bonusrole')
@@ -220,7 +222,7 @@ module.exports = {
                 if (!client_is_in_server) {
                     return interaction.editReply({
                         embeds: [{
-                            color: "#2F3136",
+                            color: "Aqua",
                             author: {
                                 name: client.user.username,
                                 iconURL: client.user.displayAvatarURL()
@@ -240,13 +242,13 @@ module.exports = {
             }
 
             if (rolereq && !invite) {
-                messages.inviteToParticipate = `**React with 🎉 to participate!**\n>>> - Only members having ${rolereq} are allowed to participate in this giveaway!`
+                messages.inviteToParticipate = `**React 🎉 để tham gia!**\n>>> - Chỉ những người có role ${rolereq} mới được phép tham gia!`
             }
             if (rolereq && invite) {
-                messages.inviteToParticipate = `**React with 🎉 to participate!**\n>>> - Only members having ${rolereq} are allowed to participate in this giveaway!\n- Members are required to join [this server](${invite}) to participate in this giveaway!`
+                messages.inviteToParticipate = `**React 🎉 để tham gia!**\n>>> - Chỉ những người có role ${rolereq} mới được phép tham gia!\n- Người chơi phải vào [máy chủ này](${invite}) để tham gia giveaway!`
             }
             if (!rolereq && invite) {
-                messages.inviteToParticipate = `**React with 🎉 to participate!**\n>>> - Members are required to join [this server](${invite}) to participate in this giveaway!`
+                messages.inviteToParticipate = `**React 🎉 để tham gia!**\n>>> - Người chơi phải vào [máy chủ này](${invite}) để tham gia giveaway!`
             }
 
 
@@ -285,7 +287,7 @@ module.exports = {
                     .setDescription(
                         `**${bonusRole}** Has **${bonusEntries}** Extra Entries in this giveaway!`
                     )
-                    .setColor("#2F3136")
+                    .setColor("Aqua")
                     .setTimestamp();
                 giveawayChannel.send({ embeds: [giveaway] });
             }
@@ -486,10 +488,18 @@ module.exports = {
             if (!giveaways.some(e => e.messageId)) {
                 return interaction.reply('💥 No Giveaways To Be Displayed')
             }
-            const msg = await interaction.channel.send({ embeds: [new Discord.EmbedBuilder().setDescription("Choose an option in the select menu to get started!").setColor("#2F3136").setTimestamp()], components: [row] })
+            const msg = await interaction.channel.send({
+                embeds: [
+                    new Discord.EmbedBuilder()
+                        .setDescription("Choose an option in the select menu to get started!")
+                        .setColor("Aqua")
+                        .setTimestamp()
+                ]
+                , components: [row]
+            })
             let embed = new Discord.EmbedBuilder()
                 .setTitle("Currently Active Giveaways")
-                .setColor("#2F3136")
+                .setColor("Aqua")
                 .setFooter({
                     text: `Requested by ${interaction.user.username}`,
                     iconURL: interaction.user.displayAvatarURL()
@@ -497,7 +507,7 @@ module.exports = {
                 .setTimestamp()
             let embedGuild = new Discord.EmbedBuilder()
                 .setTitle("Currently Active Join Requirement Giveaways")
-                .setColor("#2F3136")
+                .setColor("Aqua")
                 .setFooter({
                     text: `Requested by ${interaction.user.username}`,
                     iconURL: interaction.user.displayAvatarURL()
