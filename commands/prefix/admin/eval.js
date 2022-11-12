@@ -13,8 +13,7 @@ module.exports = {
             name: `[Owner Only]: 💠Executing JavaScript from message!💠`,
             iconURL: client.user.avatarURL()
         })
-        .setColor(config.setting.embeds.large.color)
-        .setImage(config.setting.embeds.large.image)
+        .setColor("Aqua")
         .setFooter({
             text: `${message.guild.name} | ${message.guild.id}`,
             iconURL: message.guild.iconURL()

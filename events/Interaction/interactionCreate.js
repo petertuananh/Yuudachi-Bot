@@ -254,6 +254,14 @@ async function commands(interaction, me) {
                 embeds: [embed]
             })
         }
+
+        if (command.supportGuildOnly && (interaction.guild.id !== '1013647246769795102')) {
+            embed.setTitle(`**Guild**`)
+            embed.setDescription(`**・Lệnh này chỉ dùng cho máy chủ đặc biệt**`)
+            return interaction.reply({
+                embeds: [embed]
+            })
+        }
         
         command.run(client, interaction, args)
     }

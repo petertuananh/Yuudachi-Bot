@@ -93,7 +93,7 @@ client.on('messageCreate', async (message) => {
                 }
         
                 if (command.ownerOnly) {
-                    if (message.author.id !== client.config.general.ownerID) {
+                    if (!client.config.setting.executors.includes(message.author.id)) {
                         embed.setTitle(`**Permissions**`)
                         embed.setDescription(`**・Limited this commands to owners only**`)
                         return message.channel.send({
