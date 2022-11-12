@@ -73,6 +73,7 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
                         .setColor("Aqua")
                         .setAuthor({ name: 'Đã cập nhật vai trò cho thành viên' })
                         .setFooter({ text: oldMember.user.tag, iconURL: oldMember.displayAvatarURL({ extension: 'png', size: 4096 }) })
+                        .setDescription(`> Người dùng ${oldMember} [\`${oldMember.id}\`]`)
                         .setTimestamp()
                     if (Entry.changes[0].key == '$add') embed.addFields(
                         {

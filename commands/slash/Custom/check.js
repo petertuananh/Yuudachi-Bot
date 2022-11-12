@@ -24,47 +24,47 @@ module.exports = {
     // UserPerms: ["KickMembers"],
     // BotPerms: ["KickMembers"],
     run: async (client, interaction, args) => {
-        const attachment = interaction.options.getAttachment("image")
-        await interaction.reply(`> Đang kiểm tra profile...`)
-        const acceptedColor = ["#080404", "#04040c", "#222223", "#202121", "#fcfcfc", "#fcf4fc", "#1e1f1f", "#dededf", "#049cd9", "277ea3", "#717172", "#1c1d1e", "#dededf"]
-        Tesseract.recognize(`${attachment.url}`, 'eng', {
-            logger: m => {
+        // const attachment = interaction.options.getAttachment("image")
+        // await interaction.reply(`> Đang kiểm tra profile...`)
+        // const acceptedColor = ["#080404", "#04040c", "#222223", "#202121", "#fcfcfc", "#fcf4fc", "#1e1f1f", "#dededf", "#049cd9", "277ea3", "#717172", "#1c1d1e", "#dededf"]
+        // Tesseract.recognize(`${attachment.url}`, 'eng', {
+        //     logger: m => {
 
-            }
-        })
-            .then(async ({ data: { text } }) => {
-                console.log(text)
-                if (!text.includes(`${interaction.member.user.tag}`) || !text.includes(`mayduahuongnoi`)) {
-                    // console.log(1)
-                    // console.log(interaction.member.user.tag)
-                    return interaction.editReply({
-                        embeds: [
-                            new Discord.EmbedBuilder()
-                                .setColor("Aqua")
-                                .setDescription(`> \`❌\` Tớ không thể thực hiện yêu cầu của bạn!\n> Hãy chắc chắn rằng bạn đã\n\`\`\`> Thêm https://discord.gg/mayduahuongnoi vào bio\n> Đặt tên người dùng có chứa: MĐHN\n> Chụp toàn phần profile (như hình dưới)\`\`\``)
-                                .setImage(`https://cdn.discordapp.com/attachments/934334762506666045/1040938934840086568/image.png`)
-                        ],
-                        content: ``,
-                        ephemeral: false,
-                    })
-                } else if (!interaction.member.user.username.includes("MDHN") && !interaction.member.user.username.includes("MĐHN")) {
-                    // console.log(2)
-                    return interaction.editReply({
-                        embeds: [
-                            new Discord.EmbedBuilder()
-                                .setColor("Aqua")
-                                .setDescription(`> \`❌\` Tớ không thể thực hiện yêu cầu của bạn!\n> Hãy chắc chắn rằng bạn đã\n\`\`\`> Thêm https://discord.gg/mayduahuongnoi vào bio\n> Đặt tên người dùng có chứa: MĐHN\n> Chụp toàn phần profile (như hình dưới)\`\`\``)
-                                .setImage(`https://cdn.discordapp.com/attachments/934334762506666045/1040938934840086568/image.png`)
-                        ],
-                        content: ``,
-                        ephemeral: false,
-                    })
-                } else {
-                    await interaction.member.roles.add("1040844608386646126").catch(() => { })
-                    return interaction.editReply({ content: `> \`✅\` Xác minh thành công, bạn đã nhận được role <@&1040844608386646126>`, allowedMentions: { parse: [] } })
-                }
+        //     }
+        // })
+        //     .then(async ({ data: { text } }) => {
+        //         console.log(text)
+        //         if (!text.includes(`${interaction.member.user.tag}`) || !text.includes(`mayduahuongnoi`)) {
+        //             // console.log(1)
+        //             // console.log(interaction.member.user.tag)
+        //             return interaction.editReply({
+        //                 embeds: [
+        //                     new Discord.EmbedBuilder()
+        //                         .setColor("Aqua")
+        //                         .setDescription(`> \`❌\` Tớ không thể thực hiện yêu cầu của bạn!\n> Hãy chắc chắn rằng bạn đã\n\`\`\`> Thêm https://discord.gg/mayduahuongnoi vào bio\n> Đặt tên người dùng có chứa: MĐHN\n> Chụp toàn phần profile (như hình dưới)\`\`\``)
+        //                         .setImage(`https://cdn.discordapp.com/attachments/934334762506666045/1040938934840086568/image.png`)
+        //                 ],
+        //                 content: ``,
+        //                 ephemeral: false,
+        //             })
+        //         } else if (!interaction.member.user.username.includes("MDHN") && !interaction.member.user.username.includes("MĐHN")) {
+        //             // console.log(2)
+        //             return interaction.editReply({
+        //                 embeds: [
+        //                     new Discord.EmbedBuilder()
+        //                         .setColor("Aqua")
+        //                         .setDescription(`> \`❌\` Tớ không thể thực hiện yêu cầu của bạn!\n> Hãy chắc chắn rằng bạn đã\n\`\`\`> Thêm https://discord.gg/mayduahuongnoi vào bio\n> Đặt tên người dùng có chứa: MĐHN\n> Chụp toàn phần profile (như hình dưới)\`\`\``)
+        //                         .setImage(`https://cdn.discordapp.com/attachments/934334762506666045/1040938934840086568/image.png`)
+        //                 ],
+        //                 content: ``,
+        //                 ephemeral: false,
+        //             })
+        //         } else {
+        //             await interaction.member.roles.add("1040844608386646126").catch(() => { })
+        //             return interaction.editReply({ content: `> \`✅\` Xác minh thành công, bạn đã nhận được role <@&1040844608386646126>`, allowedMentions: { parse: [] } })
+        //         }
 
-            })
+        //     })
         // getColors(`${attachment.url}`).then(colors => {
         //     colors.forEach(async color => {
         //         console.log(color.hex())
