@@ -1,6 +1,6 @@
 const client = require('../../index.js');
 const ascii = require('ascii-table');
-const dashboard = require("../../dashboard/server")
+const dashboard = require("../../api/server")
 client.on('ready', async (message) => {
     client.user.setStatus("online")
     console.log(`[SERVER INFO] ${client.user.username} ready !`);

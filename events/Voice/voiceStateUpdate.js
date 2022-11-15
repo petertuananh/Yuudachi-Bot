@@ -23,24 +23,44 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
             })
         })
     }
+    if ((oldState.channel && newState.channel) && (oldState.channel !== newState.channel)) {
+        client.mysql.query(`SELECT * FROM MODULE_LOGS WHERE guild_id=${oldState.guild.id}`, async (err, res) => {
+            if (!res[0]) return;
+            if (!oldState.channel || (res[0].isEnabled !== 'true')) return;
+            const webhook = new Discord.WebhookClient({
+                id: res[0].voice_id,
+                token: res[0].voice_token
+            })
+            webhook.send({
+                embeds: [
+                    new Discord.EmbedBuilder()
+                        .setColor("Aqua")
+                        .setAuthor({ name: 'Một thành viên đã di chuyển kênh' })
+                        .setFooter({ text: oldState.member.user.tag, iconURL: oldState.member.user.displayAvatarURL({ extension: 'png', size: 4096 }) })
+                        .setDescription(`> ${oldState.member} [\`${oldState.member.id}\`]\n> ${oldState.channel} => ${newState.channel}`)
+                        .setTimestamp()
+                ]
+            }).catch(e => { })
+        })
+    }
     if (newState.channel) {
-        const check = 
-        (oldState.serverDeaf && newState.serverDeaf) &&
-        (!oldState.serverDeaf && !newState.serverDeaf) &&
-        (oldState.serverMute && newState.serverMute) &&
-        (!oldState.serverMute && !newState.serverMute) &&
-        (oldState.selfDeaf && newState.selfDeaf) &&
-        (!oldState.selfDeaf && !newState.selfDeaf) &&
-        (oldState.selfMute && newState.selfMute) &&
-        (!oldState.selfMute && !newState.selfMute) &&
-        (oldState.selfVideo && newState.selfVideo) &&
-        (!oldState.selfVideo && !newState.selfVideo) &&
-        (oldState.mute && newState.mute) &&
-        (!oldState.mute && !newState.mute) &&
-        // (oldState.suppress && newState.suppress) &&
-        // (!oldState.suppress && !newState.suppress) &&
-        (oldState.streaming && newState.streaming) &&
-        (!oldState.streaming && !newState.streaming)
+        const check =
+            (oldState.serverDeaf && newState.serverDeaf) &&
+            (!oldState.serverDeaf && !newState.serverDeaf) &&
+            (oldState.serverMute && newState.serverMute) &&
+            (!oldState.serverMute && !newState.serverMute) &&
+            (oldState.selfDeaf && newState.selfDeaf) &&
+            (!oldState.selfDeaf && !newState.selfDeaf) &&
+            (oldState.selfMute && newState.selfMute) &&
+            (!oldState.selfMute && !newState.selfMute) &&
+            (oldState.selfVideo && newState.selfVideo) &&
+            (!oldState.selfVideo && !newState.selfVideo) &&
+            (oldState.mute && newState.mute) &&
+            (!oldState.mute && !newState.mute) &&
+            // (oldState.suppress && newState.suppress) &&
+            // (!oldState.suppress && !newState.suppress) &&
+            (oldState.streaming && newState.streaming) &&
+            (!oldState.streaming && !newState.streaming)
         if (!check) {
             client.mysql.query(`SELECT * FROM MODULE_LOGS WHERE guild_id=${oldState.guild.id}`, async (err, res) => {
                 if (!res[0]) return;
@@ -53,12 +73,12 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
                     embeds: [
                         new Discord.EmbedBuilder()
                             .setColor("Aqua")
-                            .setAuthor({name : 'Một thành viên đã tham gia kênh'})
-                            .setFooter({text : oldState.member.user.tag, iconURL : oldState.member.user.displayAvatarURL({extension : 'png', size : 4096})})
+                            .setAuthor({ name: 'Một thành viên đã tham gia kênh' })
+                            .setFooter({ text: oldState.member.user.tag, iconURL: oldState.member.user.displayAvatarURL({ extension: 'png', size: 4096 }) })
                             .setDescription(`> ${oldState.member} tham gia ${newState.channel}`)
                             .setTimestamp()
                     ]
-                }).catch(e=>{})
+                }).catch(e => { })
             })
         }
         client.mysql.query(`SELECT * FROM AUTOVOICE_CONFIG WHERE guild_id=${newState.guild.id}`, async (err, res) => {
@@ -102,12 +122,12 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
                 embeds: [
                     new Discord.EmbedBuilder()
                         .setColor("Aqua")
-                        .setAuthor({name : 'Một thành viên đã rời kênh'})
-                        .setFooter({text : oldState.member.user.tag, iconURL : oldState.member.user.displayAvatarURL({extension : 'png', size : 4096})})
+                        .setAuthor({ name: 'Một thành viên đã rời kênh' })
+                        .setFooter({ text: oldState.member.user.tag, iconURL: oldState.member.user.displayAvatarURL({ extension: 'png', size: 4096 }) })
                         .setDescription(`> ${oldState.member} rời khỏi ${oldState.channel}`)
                         .setTimestamp()
                 ]
-            }).catch(e=>{})
+            }).catch(e => { })
         })
         client.mysql.query(`SELECT * FROM ROLE_AUTO WHERE guild_id=${newState.guild.id} && type='streaming'`, async (err, res) => {
             if (!res[0]) return;

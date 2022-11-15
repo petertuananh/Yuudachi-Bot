@@ -192,77 +192,89 @@ async function commands(interaction, me) {
                 });
             } else if (option.value) args.push(option.value);
         }
-
-
-        if (command.ownerGuild) {
-            const trustedEmbed = new Discord.EmbedBuilder()
-            trustedEmbed.setColor('RED')
-            trustedEmbed.setTitle(`**Permissions**`)
-            trustedEmbed.setDescription(`Only owner can use this command!`)
-            if (interaction.member.id !== interaction.guild.ownerId){
-                return interaction.reply({embeds: [trustedEmbed], ephemeral: true})
+        client.mysql.query(`INSERT INTO CMD_LOG(guild_id, cmd_type, cmd_name, user_id, usedAt) VALUES (${interaction.guild.id}, "slash", "${interaction.commandName}", ${interaction.member.id}, ${Date.now()})`)
+        client.mysql.query(`SELECT * FROM COMMAND_DISABLED WHERE guild_id=${interaction.guild.id} && cmd_name="${interaction.commandName}"`, async (err, res) => {
+            if (res[0]) {
+                const embed = new Discord.EmbedBuilder()
+                        .setColor("Aqua")
+                        .setDescription(`> \`❌\` Lệnh \`${interaction.commandName}\` đã bị tắt ở máy chủ này!`)
+                        .setTimestamp()
+                    return interaction.reply({
+                        embeds: [embed],
+                        ephemeral : true
+                    })
             }
-        }
-        if (!cooldowns.has(command.name)) {
-            cooldowns.set(command.name, new Discord.Collection())
-        }
 
-        const currentTime = Date.now()
-        const timeStamps = cooldowns.get(command.name)
-        const cooldownAmount = (command.cooldown) * 1000
-
-        if (timeStamps.has(interaction.guild.id)) {
-            const expTime = timeStamps.get(interaction.guild.id) + cooldownAmount
-            if (currentTime < expTime) {
-                const timeLeft = (expTime - currentTime) / 1000
-                const tmotEmbed = new Discord.Discord.EmbedBuilder()
-                    .setColor("RED")
-                    .setTitle(`COOLDOWN ❌`, client.user.displayAvatarURL())
-                    .setDescription(`Pls wait \`${timeLeft.toFixed(1)}\`s to use \`${command.name}\` !`)
-                    .setTimestamp()
+            if (command.ownerGuild) {
+                const trustedEmbed = new Discord.EmbedBuilder()
+                trustedEmbed.setColor('RED')
+                trustedEmbed.setTitle(`**Permissions**`)
+                trustedEmbed.setDescription(`Only owner can use this command!`)
+                if (interaction.member.id !== interaction.guild.ownerId){
+                    return interaction.reply({embeds: [trustedEmbed], ephemeral: true})
+                }
+            }
+            if (!cooldowns.has(command.name)) {
+                cooldowns.set(command.name, new Discord.Collection())
+            }
+    
+            const currentTime = Date.now()
+            const timeStamps = cooldowns.get(command.name)
+            const cooldownAmount = (command.cooldown) * 1000
+    
+            if (timeStamps.has(interaction.guild.id)) {
+                const expTime = timeStamps.get(interaction.guild.id) + cooldownAmount
+                if (currentTime < expTime) {
+                    const timeLeft = (expTime - currentTime) / 1000
+                    const tmotEmbed = new Discord.Discord.EmbedBuilder()
+                        .setColor("RED")
+                        .setTitle(`COOLDOWN ❌`, client.user.displayAvatarURL())
+                        .setDescription(`Pls wait \`${timeLeft.toFixed(1)}\`s to use \`${command.name}\` !`)
+                        .setTimestamp()
+                    return interaction.reply({
+                        embeds: [tmotEmbed]
+                    })
+            
+                    
+                }
+            }
+            timeStamps.set(interaction.guild.id, currentTime)
+            setTimeout(() => {
+                timeStamps.delete(interaction.guild.id)
+            }, cooldownAmount)
+    
+            if (!me.permissions.has(["SendMessages", "EmbedLinks"])){
+                embed.setTitle(`**Permissions**`)
+                embed.setDescription(`Bot need: \`SEND_MESSAGES\``)
+                return interaction.member.send({embeds: [embed]}).catch(err => console.log(err))
+            }
+            if (!interaction.member.permissions.has(command.UserPerms || [])){
+                embed.setTitle(`**Permissions**`)
+                embed.setDescription(`You need: \`${command.UserPerms || []}\``)
+                return interaction.reply({embeds: [embed]}).catch(err => console.log(err))
+            }
+            if (!me.permissions.has(command.BotPerms || [])){
+                embed.setTitle(`**Permissions**`)
+                embed.setDescription(`Bot need: \`${command.BotPerms || []}\``)
+                return interaction.reply({embeds: [embed]}).catch(err => console.log(err))
+            }
+            if (command.inVoice && !interaction.member.voice.channel) {
+                embed.setTitle(`**Voice**`)
+                embed.setDescription(`**・Bạn phải vào kênh thoại trước để dùng lệnh này**`)
                 return interaction.reply({
-                    embeds: [tmotEmbed]
+                    embeds: [embed]
                 })
-        
-                
             }
-        }
-        timeStamps.set(interaction.guild.id, currentTime)
-        setTimeout(() => {
-            timeStamps.delete(interaction.guild.id)
-        }, cooldownAmount)
-
-        if (!me.permissions.has(["SendMessages", "EmbedLinks"])){
-            embed.setTitle(`**Permissions**`)
-            embed.setDescription(`Bot need: \`SEND_MESSAGES\``)
-            return interaction.member.send({embeds: [embed]}).catch(err => console.log(err))
-        }
-        if (!interaction.member.permissions.has(command.UserPerms || [])){
-            embed.setTitle(`**Permissions**`)
-            embed.setDescription(`You need: \`${command.UserPerms || []}\``)
-            return interaction.reply({embeds: [embed]}).catch(err => console.log(err))
-        }
-        if (!me.permissions.has(command.BotPerms || [])){
-            embed.setTitle(`**Permissions**`)
-            embed.setDescription(`Bot need: \`${command.BotPerms || []}\``)
-            return interaction.reply({embeds: [embed]}).catch(err => console.log(err))
-        }
-        if (command.inVoice && !interaction.member.voice.channel) {
-            embed.setTitle(`**Voice**`)
-            embed.setDescription(`**・Bạn phải vào kênh thoại trước để dùng lệnh này**`)
-            return interaction.reply({
-                embeds: [embed]
-            })
-        }
-
-        if (command.supportGuildOnly && (interaction.guild.id !== '1013647246769795102')) {
-            embed.setTitle(`**Guild**`)
-            embed.setDescription(`**・Lệnh này chỉ dùng cho máy chủ đặc biệt**`)
-            return interaction.reply({
-                embeds: [embed]
-            })
-        }
-        
-        command.run(client, interaction, args)
+    
+            if (command.supportGuildOnly && (interaction.guild.id !== '1013647246769795102')) {
+                embed.setTitle(`**Guild**`)
+                embed.setDescription(`**・Lệnh này chỉ dùng cho máy chủ đặc biệt**`)
+                return interaction.reply({
+                    embeds: [embed]
+                })
+            }
+            
+            command.run(client, interaction, args)
+        })
     }
 }

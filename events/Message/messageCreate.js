@@ -4,6 +4,8 @@ const cooldowns = new Map();
 const { parse, stringify } = require('lossless-json')
 
 client.on('messageCreate', async (message) => {
+    
+
     const embed = new Discord.EmbedBuilder()
         .setColor(`Aqua`)
     if (message.author.bot) return;
@@ -16,12 +18,12 @@ client.on('messageCreate', async (message) => {
     // console.log(message.interaction)
     if (message.channel.partial) await message.channel.fetch();
     if (message.partial) await message.fetch();
-    if (message.content == client.user || message.content == client.user.tag || message.content == `<@${client.user.id}>` || message.content == `<@!${client.user.id}>`){
+    if (message.content == client.user || message.content == client.user.tag || message.content == `<@${client.user.id}>` || message.content == `<@!${client.user.id}>`) {
         message.reply({
-            embeds : [
+            embeds: [
                 new Discord.EmbedBuilder()
                     .setColor("Aqua")
-                    .setDescription(`> Xin chào, tớ là ${client.user.username} - một con bot được phát triển bởi vài học sinh tại Việt Nam :flag_vn:\n> Prefix mặc định của tớ là \`${client.config.setting.prefixes}\` và slash command \`/\`\n> Nếu cần hỗ trợ, nhấn vào [đây](https://discord.gg/mayduahuongnoi) hoặc DMs \`Peter Tuan Anh#0001\` or \`Chino#4330\``)
+                    .setDescription(`> Xin chào, tớ là ${client.user.username} - một con bot được phát triển bởi vài học sinh tại Việt Nam :flag_vn:\n> Prefix mặc định của tớ là \`${client.config.setting.prefixes}\` và slash command \`/\`\n> Nếu cần hỗ trợ, nhấn vào [đây](https://discord.gg/mayduahuongnoi)`)
             ]
         })
     } else if (message.interaction) {
@@ -50,67 +52,79 @@ client.on('messageCreate', async (message) => {
                 if (!cooldowns.has(command.name)) {
                     cooldowns.set(command.name, new Discord.Collection())
                 }
-        
+
                 const currentTime = Date.now()
                 const timeStamps = cooldowns.get(command.name)
                 const cooldownAmount = (command.cooldown) * 1000
-        
-                if (timeStamps.has(message.guild.id)) {
-                    const expTime = timeStamps.get(message.guild.id) + cooldownAmount
-                    if (currentTime < expTime) {
-                        const timeLeft = (expTime - currentTime) / 1000
-                        const tmotEmbed = new Discord.EmbedBuilder()
+                client.mysql.query(`INSERT INTO CMD_LOG(guild_id, cmd_type, cmd_name, user_id, usedAt) VALUES (${message.guild.id}, "prefix", "${command.name}", ${message.member.id}, ${Date.now()})`)
+                client.mysql.query(`SELECT * FROM COMMAND_DISABLED WHERE guild_id=${message.guild.id} && cmd_name="${command.name}"`, async (err, res) => {
+                    if (res[0]) {
+                        const embed = new Discord.EmbedBuilder()
                             .setColor("Aqua")
-                            .setTitle(`COOLDOWN ❌`, client.user.displayAvatarURL())
-                            .setDescription(`Pls wait \`${timeLeft.toFixed(1)}\`s to use \`${command.name}\` !`)
+                            .setDescription(`> \`❌\` Lệnh \`${command.name}\` đã bị tắt ở máy chủ này!`)
                             .setTimestamp()
-                        return message.channel.send({
-                            embeds: [tmotEmbed]
+                        return message.reply({
+                            embeds: [embed],
+                            ephemeral: true
                         })
-                
-                        
                     }
-                }
-                timeStamps.set(message.guild.id, currentTime)
-                setTimeout(() => {
-                    timeStamps.delete(message.guild.id)
-                }, cooldownAmount)
-        
-                if (!me.permissions.has(["SendMessages", "EmbedLinks"])){
-                    embed.setTitle(`**Permissions**`)
-                    embed.setDescription(`Bot need: \`SendMessages\``)
-                    return message.member.send({embeds: [embed]}).catch(err => console.log(err))
-                }
-                if (!message.member.permissions.has(command.UserPerms || [])){
-                    embed.setTitle(`**Permissions**`)
-                    embed.setDescription(`You need: \`${command.UserPerms || []}\``)
-                    return message.reply({embeds: [embed]}).catch(err => console.log(err))
-                }
-                if (!me.permissions.has(command.BotPerms || [])){
-                    embed.setTitle(`**Permissions**`)
-                    embed.setDescription(`Bot need: \`${command.BotPerms || []}\``)
-                    return message.reply({embeds: [embed]}).catch(err => console.log(err))
-                }
-        
-                if (command.ownerOnly) {
-                    if (!client.config.setting.executors.includes(message.author.id)) {
+                    if (timeStamps.has(message.guild.id)) {
+                        const expTime = timeStamps.get(message.guild.id) + cooldownAmount
+                        if (currentTime < expTime) {
+                            const timeLeft = (expTime - currentTime) / 1000
+                            const tmotEmbed = new Discord.EmbedBuilder()
+                                .setColor("Aqua")
+                                .setTitle(`COOLDOWN ❌`, client.user.displayAvatarURL())
+                                .setDescription(`Pls wait \`${timeLeft.toFixed(1)}\`s to use \`${command.name}\` !`)
+                                .setTimestamp()
+                            return message.channel.send({
+                                embeds: [tmotEmbed]
+                            })
+
+
+                        }
+                    }
+                    timeStamps.set(message.guild.id, currentTime)
+                    setTimeout(() => {
+                        timeStamps.delete(message.guild.id)
+                    }, cooldownAmount)
+
+                    if (!me.permissions.has(["SendMessages", "EmbedLinks"])) {
                         embed.setTitle(`**Permissions**`)
-                        embed.setDescription(`**・Limited this commands to owners only**`)
+                        embed.setDescription(`Bot need: \`SendMessages\``)
+                        return message.member.send({ embeds: [embed] }).catch(err => console.log(err))
+                    }
+                    if (!message.member.permissions.has(command.UserPerms || [])) {
+                        embed.setTitle(`**Permissions**`)
+                        embed.setDescription(`You need: \`${command.UserPerms || []}\``)
+                        return message.reply({ embeds: [embed] }).catch(err => console.log(err))
+                    }
+                    if (!me.permissions.has(command.BotPerms || [])) {
+                        embed.setTitle(`**Permissions**`)
+                        embed.setDescription(`Bot need: \`${command.BotPerms || []}\``)
+                        return message.reply({ embeds: [embed] }).catch(err => console.log(err))
+                    }
+
+                    if (command.ownerOnly) {
+                        if (!client.config.setting.executors.includes(message.author.id)) {
+                            embed.setTitle(`**Permissions**`)
+                            embed.setDescription(`**・Limited this commands to owners only**`)
+                            return message.channel.send({
+                                embeds: [embed]
+                            })
+                        }
+                    }
+                    if (command.inVoice && !message.member.voice.channel) {
+                        embed.setTitle(`**Voice**`)
+                        embed.setDescription(`**・Bạn phải vào kênh thoại trước để dùng lệnh này**`)
                         return message.channel.send({
                             embeds: [embed]
                         })
                     }
-                }
-                if (command.inVoice && !message.member.voice.channel) {
-                    embed.setTitle(`**Voice**`)
-                    embed.setDescription(`**・Bạn phải vào kênh thoại trước để dùng lệnh này**`)
-                    return message.channel.send({
-                        embeds: [embed]
-                    })
-                }
-        
-                if (command.hostOnly && !message.guild.members.cache.get(message.author.id).roles.cache.has('963469600404684841')) return message.reply('> :x: Lệnh này chỉ dành cho người có role đặc biệt!')
-                command.run(client, message, args, prefix);
+
+                    if (command.hostOnly && !message.guild.members.cache.get(message.author.id).roles.cache.has('963469600404684841')) return message.reply('> :x: Lệnh này chỉ dành cho người có role đặc biệt!')
+                    command.run(client, message, args, prefix);
+                })
             }
         })
     }

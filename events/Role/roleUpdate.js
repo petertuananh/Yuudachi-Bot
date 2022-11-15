@@ -43,6 +43,28 @@ client.on('roleUpdate', async (oldRole, newRole) => {
                         .setTimestamp()
                 ]
             }).catch(e => { })
+        } else if (oldRole.mentionable !== newRole.mentionable) {
+            webhook.send({
+                embeds: [
+                    new Discord.EmbedBuilder()
+                        .setColor("Aqua")
+                        .setAuthor({ name: 'Đã thay đổi quyền đề cập vai trò' })
+                        .setFooter({ text: newRole.name })
+                        .setDescription(`> ${oldRole} [\`${oldRole.id}\`]\n> \`${oldRole.mentionable ? `Có` : `Không`}\` => \`${oldRole.mentionable ? `Không` : `Có`}\``)
+                        .setTimestamp()
+                ]
+            }).catch(e => { })
+        } else if (oldRole.icon !== newRole.icon) {
+            webhook.send({
+                embeds: [
+                    new Discord.EmbedBuilder()
+                        .setColor("Aqua")
+                        .setAuthor({ name: 'Đã thay đổi biểu tượng vai trò' })
+                        .setFooter({ text: newRole.name })
+                        .setDescription(`> ${oldRole} [\`${oldRole.id}\`]\n> ${oldRole.icon ? `[Cũ](${oldRole.iconURL({ extension: 'png', size: 4096 })})` : `Không`} => ${newRole.icon ? `[Mới](${newRole.iconURL({ extension: 'png', size: 4096 })})` : `Không`}`)
+                        .setTimestamp()
+                ]
+            }).catch(e => { })
         } else if (oldRole.position !== newRole.position) {
             webhook.send({
                 embeds: [
