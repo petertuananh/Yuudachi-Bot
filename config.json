@@ -4,7 +4,8 @@
         "secret" : "ALZ3-s2vc0NdenP_wMCSBlUxyzncrcNV"
     },
     "server" : {
-        "port" : 5400
+        "port" : 5400,
+        "token" : "wMCSBlUxyzncrcNV"
     },
     "api": {
         "youtubeAPI": "AIzaSyDqBFlstzlhEVIi4RS6GJQK1NtFem3b7bo",
